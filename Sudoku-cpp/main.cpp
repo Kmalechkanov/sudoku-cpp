@@ -6,7 +6,7 @@
 int main()
 {
     Generator gen;
-    std::vector<std::vector<int>> sudokuMatrix = gen.generate(123123123);
+    std::vector<std::vector<int>> sudokuMatrix = gen.generate(030203);
 
     for (int h = 0; h < GlobalConstants::SudokuHeight; h++)
     {
