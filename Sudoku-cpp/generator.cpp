@@ -1,13 +1,13 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-#include "Generator.h"
-#include "GlobalConstants.h"
-#include "Manager.h"
+#include "generator.h"
+#include "globalconstants.h"
+#include "manager.h"
 
 std::vector<std::vector<int>> Generator::generate(int seed)
 {
-	std::vector<std::vector<int>> matrix(GlobalConstants::SudokuHeight, std::vector<int>(GlobalConstants::SudokuWidth, 0));;
+	std::vector<std::vector<int>> matrix(GlobalConstants::SudokuHeight, std::vector<int>(GlobalConstants::SudokuWidth, 0));
 	std::vector<int> numbers;
 
 	Manager manager;
@@ -18,6 +18,7 @@ std::vector<std::vector<int>> Generator::generate(int seed)
 	{
 		manager.shuffle(&numbers, seed % 10);
 		seed /= 10;
+		int wResets = 0;
 
 		for (int w = 0; w < GlobalConstants::SudokuWidth; w++)
 		{
@@ -84,6 +85,18 @@ std::vector<std::vector<int>> Generator::generate(int seed)
 				}
 				manager.shuffle(&numbers, seedDigit);
 				w = -1;
+				wResets++;
+				if (wResets == 9)
+				{
+					for (int i = 0; i < 9; i++)
+					{
+						matrix[h-1][i] = 0;
+						manager.refill(&numbers);
+					}
+					h -= 2;
+
+					break;
+				}
 				continue;
 			}
 

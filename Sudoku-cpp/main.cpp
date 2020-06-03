@@ -1,12 +1,22 @@
 #include <iostream>
 #include <vector>
-#include "Generator.h"
-#include "GlobalConstants.h"
+#include <algorithm>
+#include <string>
+#include "generator.h"
+#include "manager.h"
+#include "globalconstants.h"
 
 int main()
 {
     Generator gen;
-    std::vector<std::vector<int>> sudokuMatrix = gen.generate(030203);
+    Manager manager;
+    
+    int seed = 42342;
+
+    std::string seedString = std::to_string(seed);
+    std::replace(seedString.begin(), seedString.end(), '0', '1');
+
+    std::vector<std::vector<int>> sudokuMatrix = gen.generate(seed);
 
     for (int h = 0; h < GlobalConstants::SudokuHeight; h++)
     {
@@ -16,6 +26,9 @@ int main()
         }
         std::cout << std::endl;
     }
+
+    manager.saveSolution(sudokuMatrix, seedString);
+    manager.makeSudoku(sudokuMatrix, seedString, 3, 123456789);
 
     std::cout << std::endl;
 }
