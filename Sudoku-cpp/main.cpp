@@ -2,6 +2,7 @@
 #include <vector>
 #include <algorithm>
 #include <string>
+
 #include "generator.h"
 #include "manager.h"
 #include "globalconstants.h"
@@ -11,7 +12,7 @@ int main()
     Generator gen;
     Manager manager;
     
-    int seed = 42342;
+    int seed = 4234123;
 
     std::string seedString = std::to_string(seed);
     std::replace(seedString.begin(), seedString.end(), '0', '1');
@@ -29,6 +30,8 @@ int main()
 
     manager.saveSolution(sudokuMatrix, seedString);
     manager.makeSudoku(sudokuMatrix, seedString, 3, 123456789);
+
+    manager.getAllSolutions();
 
     std::cout << std::endl;
 }

@@ -1,7 +1,9 @@
+#include "generator.h"
+
 #include <iostream>
 #include <vector>
 #include <algorithm>
-#include "generator.h"
+
 #include "globalconstants.h"
 #include "manager.h"
 

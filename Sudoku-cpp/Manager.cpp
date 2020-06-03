@@ -1,17 +1,18 @@
-#include <vector>
-#include <string>
-#include <algorithm>
+#include "manager.h"
+
 #include <iostream>
 #include <fstream>  
-#include "manager.h"
-#include "globalconstants.h"
+#include <filesystem>
+#include <vector>
+#include <string>
 
-void Manager::shuffle(std::vector<int>* numbers, int times)
+#include "globalconstants.h"
+#include <random>
+
+void Manager::shuffle(std::vector<int>* numbers, int seed)
 {
-	for (int i = 0; i < times; i++)
-	{
-		std::random_shuffle(numbers->begin(), numbers->end());
-	}
+	std::mt19937 g(seed);
+	std::shuffle(numbers->begin(), numbers->end(), g);
 }
 
 void Manager::refill(std::vector<int>* numbers)
@@ -51,20 +52,28 @@ void Manager::makeSudoku(std::vector<std::vector<int>> matrix, std::string name,
 
 	for (int i = 0; i < toBeRemoved; i++)
 	{
-		int shuffleTimes = seedForUse % 10;
+		int shuffleSeed = seedForUse % 10;
 		this->refill(&numbers);
+
+		this->shuffle(&numbers, shuffleSeed);
+		int h = numbers.back()-1;
+		this->shuffle(&numbers, shuffleSeed);
+		int w = numbers.front()-1;
 
 		while (true)
 		{
-			this->shuffle(&numbers, shuffleTimes);
-			int h = numbers.back()-1;
-			this->shuffle(&numbers, shuffleTimes / (h+1));
-			int w = numbers.front()-1;
-
 			if (matrix[h][w] != 0)
 			{
 				matrix[h][w] = 0;
 				break;
+			}
+
+			if (true)
+			{
+				numbers.emplace(numbers.begin(), numbers.back());
+				numbers.pop_back();
+				h = numbers.back() - 1;
+				w = numbers.front() - 1;
 			}
 		}
 
@@ -89,3 +98,19 @@ void Manager::makeSudoku(std::vector<std::vector<int>> matrix, std::string name,
 
 	fileStream.close();
 }
+
+std::string* Manager::getAllSolutions()
+{
+	std::string path = "Solutions/";
+
+	for (const auto& entry : std::filesystem::directory_iterator(path))
+		std::cout << entry.path() << std::endl;
+	std::string* asds = new std::string;
+
+	return asds;
+}
+
+//std::string* getAllSudokus();
+//
+//std::vector<std::vector<int>> getSolution(std::string);
+//std::vector<std::vector<int>> getSudoku(std::string);
