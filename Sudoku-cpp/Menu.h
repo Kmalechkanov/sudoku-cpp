@@ -8,7 +8,6 @@ public:
 
 	void Play();
 	void Solutions();
-	void Exit();
 
 	void NewGame();
 	void LoadGame();

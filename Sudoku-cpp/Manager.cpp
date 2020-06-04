@@ -30,6 +30,27 @@ void Manager::clearConsole()
 
 #endif 
 
+void Manager::drawMatrix(std::vector<std::vector<int>> matrix) {
+	for (int h = 0; h < GlobalConstants::SudokuHeight; h++)
+	{
+		if (h % 3 == 0)
+		{
+			std::cout << "+---+---+---+" << std::endl;
+		}
+
+		for (int w = 0; w < GlobalConstants::SudokuWidth; w++)
+		{
+			if (w % 3 == 0)
+			{
+				std::cout << "|";
+			}
+			std::cout << matrix[h][w];
+		}
+		std::cout << "|" << std::endl;
+	}
+	std::cout << "+---+---+---+" << std::endl;
+}
+
 void Manager::shuffle(std::vector<int>* numbers, int seed)
 {
 	std::mt19937 g(seed);
@@ -76,7 +97,7 @@ void Manager::saveSudoku(std::vector<std::vector<int>> sudoku, std::string name)
 void Manager::makeSudoku(std::vector<std::vector<int>> matrix, std::string name, int difficulty, int seed)
 {
 	int allBoxes = GlobalConstants::SudokuHeight * GlobalConstants::SudokuHeight;
-	int toBeRemoved = allBoxes / difficulty;
+	int toBeRemoved = allBoxes / (4 - difficulty);
 	std::vector<int> numbers;
 	int seedForUse = seed;
 
@@ -90,7 +111,8 @@ void Manager::makeSudoku(std::vector<std::vector<int>> matrix, std::string name,
 		int h = numbers.back()-1;
 		this->shuffle(&numbers, shuffleSeed);
 		int w = numbers.front()-1;
-
+		
+		int cycles = 0;
 		while (true)
 		{
 			if (matrix[h][w] != 0)
@@ -99,12 +121,16 @@ void Manager::makeSudoku(std::vector<std::vector<int>> matrix, std::string name,
 				break;
 			}
 
-			if (true)
+			numbers.emplace(numbers.begin(), numbers.back());
+			numbers.pop_back();
+			h = numbers.back() - 1;
+			w = numbers.front() - 1;
+			cycles++;
+
+			if (cycles == 8)
 			{
-				numbers.emplace(numbers.begin(), numbers.back());
-				numbers.pop_back();
-				h = numbers.back() - 1;
-				w = numbers.front() - 1;
+				cycles = 0;
+				this->shuffle(&numbers, shuffleSeed);
 			}
 		}
 
@@ -115,9 +141,9 @@ void Manager::makeSudoku(std::vector<std::vector<int>> matrix, std::string name,
 		}
 	}
 
-	std::string sudokuName = name + "-" + std::to_string(difficulty) + "-" + std::to_string(seed) + ".txt";
+	std::string sudokuName = name + "-" + std::to_string(difficulty-2) + "-" + std::to_string(seed) + ".txt";
 
-	this->saveFile(matrix, "Sudokus", sudokuName);
+	this->saveSudoku(matrix, sudokuName);
 }
 
 std::vector<std::string> Manager::getAllSolutions()
@@ -144,4 +170,43 @@ std::vector<std::string> Manager::getAllSudokus()
 	}
 
 	return sudokus;
+}
+
+std::vector<std::vector<int>> Manager::getSolution(std::string path)
+{
+	return this->readFile(path);
+}
+
+std::vector<std::vector<int>> Manager::getSudoku(std::string path)
+{
+	return this->readFile(path);
+}
+
+std::vector<std::vector<int>> Manager::readFile(std::string path)
+{
+	std::ifstream myfile(path);
+	char c;
+	int counter = 0;
+	std::vector<std::vector<int>> matrix;
+	std::vector<int> line;
+
+	while ((myfile.get(c), myfile.eof()) == false) {
+		if (c < '0' || c > '9')
+		{
+			continue;
+		}
+
+		line.push_back(c - '0');
+
+		if (counter == 8)
+		{
+			matrix.push_back(line);
+			line.clear();
+			counter = 0;
+			continue;
+		}
+		counter++;
+	}
+
+	return matrix;
 }

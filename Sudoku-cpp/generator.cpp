@@ -11,6 +11,7 @@ std::vector<std::vector<int>> Generator::generate(int seed)
 {
 	std::vector<std::vector<int>> matrix(GlobalConstants::SudokuHeight, std::vector<int>(GlobalConstants::SudokuWidth, 0));
 	std::vector<int> numbers;
+	int seedForUse = seed;
 
 	Manager manager;
 
@@ -18,8 +19,13 @@ std::vector<std::vector<int>> Generator::generate(int seed)
 
 	for (int h = 0; h < GlobalConstants::SudokuHeight; h++)
 	{
-		manager.shuffle(&numbers, seed % 10);
-		seed /= 10;
+		manager.shuffle(&numbers, seedForUse % 10);
+		seedForUse /= 10;
+		if (seedForUse == 0)
+		{
+			seedForUse = seed;
+		}
+
 		int wResets = 0;
 
 		for (int w = 0; w < GlobalConstants::SudokuWidth; w++)
