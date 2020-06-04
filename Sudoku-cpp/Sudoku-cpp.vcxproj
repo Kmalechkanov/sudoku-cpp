@@ -151,11 +151,13 @@
     <ClCompile Include="Generator.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Manager.cpp" />
+    <ClCompile Include="Menu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Generator.h" />
     <ClInclude Include="GlobalConstants.h" />
     <ClInclude Include="Manager.h" />
+    <ClInclude Include="Menu.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>

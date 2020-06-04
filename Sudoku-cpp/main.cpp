@@ -6,10 +6,15 @@
 #include "generator.h"
 #include "manager.h"
 #include "globalconstants.h"
+#include "menu.h"
 
 int main()
 {
-    Generator gen;
+    Menu menu;
+
+    menu.Main();
+
+   /* Generator gen;
     Manager manager;
     
     int seed = 4234123;
@@ -33,5 +38,5 @@ int main()
 
     manager.getAllSolutions();
 
-    std::cout << std::endl;
+    std::cout << std::endl;*/
 }

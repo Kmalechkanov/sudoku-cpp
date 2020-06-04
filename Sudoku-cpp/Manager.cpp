@@ -5,9 +5,30 @@
 #include <filesystem>
 #include <vector>
 #include <string>
+#include <random>
+#include <cstdlib>
 
 #include "globalconstants.h"
-#include <random>
+
+#ifdef __cplusplus__
+
+void Manager::clearConsole()
+{
+	cout << string(100, '\n');
+}
+
+#else
+
+#include <stdio.h>
+
+void Manager::clearConsole()
+{
+	int n;
+	for (n = 0; n < 10; n++)
+		printf("\n\n\n\n\n\n\n\n\n\n");
+}
+
+#endif 
 
 void Manager::shuffle(std::vector<int>* numbers, int seed)
 {
@@ -25,21 +46,31 @@ void Manager::refill(std::vector<int>* numbers)
 	}
 }
 
-void Manager::saveSolution(std::vector<std::vector<int>> solution, std::string name)
+void Manager::saveFile(std::vector<std::vector<int>> matrix, std::string folder, std::string name)
 {
-	std::ofstream fileStream("Solutions/" + name + ".txt");
+	std::ofstream fileStream(folder + "/" + name + ".txt");
 
 	for (int i = 0; i < GlobalConstants::SudokuHeight; i++)
 	{
 		for (int j = 0; j < GlobalConstants::SudokuWidth; j++)
 		{
-			fileStream << std::to_string(solution[i][j]);
+			fileStream << std::to_string(matrix[i][j]);
 		}
 
 		fileStream << std::endl;
 	}
 
 	fileStream.close();
+}
+
+void Manager::saveSolution(std::vector<std::vector<int>> solution, std::string name)
+{
+	this->saveFile(solution, "Solutions", name);
+}
+
+void Manager::saveSudoku(std::vector<std::vector<int>> sudoku, std::string name)
+{
+	this->saveFile(sudoku, "Sudokus", name);
 }
 
 void Manager::makeSudoku(std::vector<std::vector<int>> matrix, std::string name, int difficulty, int seed)
@@ -84,33 +115,33 @@ void Manager::makeSudoku(std::vector<std::vector<int>> matrix, std::string name,
 		}
 	}
 
-	std::ofstream fileStream("Sudokus/" + name + "-" + std::to_string(difficulty) + "-" + std::to_string(seed) + ".txt");
+	std::string sudokuName = name + "-" + std::to_string(difficulty) + "-" + std::to_string(seed) + ".txt";
 
-	for (int i = 0; i < GlobalConstants::SudokuHeight; i++)
-	{
-		for (int j = 0; j < GlobalConstants::SudokuWidth; j++)
-		{
-			fileStream << std::to_string(matrix[i][j]);
-		}
-
-		fileStream << std::endl;
-	}
-
-	fileStream.close();
+	this->saveFile(matrix, "Sudokus", sudokuName);
 }
 
-std::string* Manager::getAllSolutions()
+std::vector<std::string> Manager::getAllSolutions()
 {
 	std::string path = "Solutions/";
+	std::vector<std::string> solutions;
 
 	for (const auto& entry : std::filesystem::directory_iterator(path))
-		std::cout << entry.path() << std::endl;
-	std::string* asds = new std::string;
+	{
+		solutions.push_back(entry.path().string());
+	}
 
-	return asds;
+	return solutions;
 }
 
-//std::string* getAllSudokus();
-//
-//std::vector<std::vector<int>> getSolution(std::string);
-//std::vector<std::vector<int>> getSudoku(std::string);
+std::vector<std::string> Manager::getAllSudokus()
+{
+	std::string path = "Sudokus/";
+	std::vector<std::string> sudokus;
+
+	for (const auto& entry : std::filesystem::directory_iterator(path))
+	{
+		sudokus.push_back(entry.path().string());
+	}
+
+	return sudokus;
+}
