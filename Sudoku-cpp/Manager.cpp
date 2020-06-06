@@ -97,7 +97,7 @@ void Manager::saveSudoku(std::vector<std::vector<int>> sudoku, std::string name)
 void Manager::makeSudoku(std::vector<std::vector<int>> matrix, std::string name, int difficulty, int seed)
 {
 	int allBoxes = GlobalConstants::SudokuHeight * GlobalConstants::SudokuHeight;
-	int toBeRemoved = allBoxes / (4 - difficulty);
+	int toBeRemoved = allBoxes / (7 - difficulty);
 	std::vector<int> numbers;
 	int seedForUse = seed;
 
@@ -141,7 +141,7 @@ void Manager::makeSudoku(std::vector<std::vector<int>> matrix, std::string name,
 		}
 	}
 
-	std::string sudokuName = name + "-" + std::to_string(difficulty-2) + "-" + std::to_string(seed) + ".txt";
+	std::string sudokuName = name + "-" + std::to_string(difficulty-2) + "-" + std::to_string(seed);
 
 	this->saveSudoku(matrix, sudokuName);
 }

@@ -103,6 +103,13 @@ std::vector<std::vector<int>> Generator::generate(int seed)
 					}
 					h -= 2;
 
+					seed = 1;
+					for (int i = 0; i < numbers.size(); i++)
+					{
+						seed += numbers[i];
+						seed *= 10;
+					}
+
 					break;
 				}
 				continue;
