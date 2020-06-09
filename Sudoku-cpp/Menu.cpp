@@ -74,12 +74,12 @@ void Menu::Play() {
 		}
 		else if (input == 1)
 		{
-			// TODO Display all games
+			this->LoadGame();
 			break;
 		}
 		else if (input == 2)
 		{
-			// TODO possaubility to delete solutions and levels
+			// TODO possability to delete solutions and levels
 			this->Main();
 			break;
 		}
@@ -149,13 +149,64 @@ void Menu::NewGame() {
 
 	std::vector<std::vector<int>> sudoku = generator.generate(seed);
 	manager.saveSolution(sudoku, name);
-	manager.makeSudoku(sudoku, name, difficulty + 2, seed);
+
+	std::string path = manager.makeSudoku(sudoku, name, difficulty + 2, seed);
 
 	std::cout << "| | \n"
 		<< "[X] Succesfully created \"" << name << "\" with seed " << seed << " and difficulty " << difficulty << "!\n";
 
-	//TODO start the sudoku.
+	std::cout << path << std::endl;
+
+	manager.startGame(sudoku, sudoku);
 }
+
+void Menu::LoadGame() {
+	manager.clearConsole();
+
+	std::vector<std::string> sudokus = manager.getAllSaves();
+	int input = -1;
+
+	while (true)
+	{
+		std::cout << std::endl
+			<< "[X] Sudokus\n"
+			<< "| |\n";
+
+		for (int i = 0; i < sudokus.size(); i++)
+		{
+			std::cout << "|" << i << "| " << sudokus[i] << "\n";
+		}
+
+		std::cout << "| |\n"
+			<< "|" << sudokus.size() << "|" << " Back\n"
+			<< "| |\n"
+			<< "[X] Select Game: ";
+
+		std::cin >> input;
+
+		if (input >= 0 && input < sudokus.size())
+		{
+			std::vector<std::vector<int>> sudoku = manager.getSudoku(sudokus[input]);
+			std::string initSudokuPath = "Sudokus" + sudokus[input].substr(5);
+			
+			std::cout << initSudokuPath << std::endl;
+
+			std::vector<std::vector<int>> sudokuInit = manager.getSudoku(initSudokuPath);
+
+			manager.startGame(sudoku,sudokuInit);
+			break;
+		}
+		else if (input == sudokus.size())
+		{
+			this->Main();
+			break;
+		}
+
+		manager.clearConsole();
+		std::cout << "Invalid option!" << std::endl;
+	}
+}
+
 
 void Menu::Solutions() {
 	manager.clearConsole();

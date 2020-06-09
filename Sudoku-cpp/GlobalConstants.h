@@ -11,4 +11,11 @@ namespace GlobalConstants
         Normal = 3,
         Easy = 2,
     };
+
+    const enum class Colors
+    {
+        White = 37,
+        Yellow = 33,
+        Red = 91,
+    };
 }

@@ -9,6 +9,7 @@
 #include <cstdlib>
 
 #include "globalconstants.h"
+#include "engine.h"
 
 #ifdef __cplusplus__
 
@@ -30,12 +31,37 @@ void Manager::clearConsole()
 
 #endif 
 
-void Manager::drawMatrix(std::vector<std::vector<int>> matrix) {
+void Manager::setColor(GlobalConstants::Colors color) {
+	switch (color)
+	{
+	case GlobalConstants::Colors::Red:
+		printf("\x1B[91m");
+		break;
+	case GlobalConstants::Colors::Yellow:
+		std::cout << "\x1B[33m";
+		break;
+	case GlobalConstants::Colors::White:
+		printf("\x1B[32m");
+		break;
+	default:
+		printf("\x1B[37m");
+		break;
+	}
+}
+
+void Manager::drawMatrix(std::vector<std::vector<int>> initial) {
+	this->drawMatrix(initial, std::vector<std::vector<int>>(9, std::vector<int>(9, 0)));
+}
+
+void Manager::drawMatrix(std::vector<std::vector<int>> initial, std::vector<std::vector<int>> changed) {
+	this->setColor(GlobalConstants::Colors::Yellow);
+	std::string line = "+---+---+---+";
+
 	for (int h = 0; h < GlobalConstants::SudokuHeight; h++)
 	{
 		if (h % 3 == 0)
 		{
-			std::cout << "+---+---+---+" << std::endl;
+			std::cout << line << std::endl;
 		}
 
 		for (int w = 0; w < GlobalConstants::SudokuWidth; w++)
@@ -44,11 +70,33 @@ void Manager::drawMatrix(std::vector<std::vector<int>> matrix) {
 			{
 				std::cout << "|";
 			}
-			std::cout << matrix[h][w];
+			if (initial[h][w] == 0)
+			{
+				if (changed[h][w] == 0)
+				{
+					std::cout << " ";
+					continue;
+				}
+
+				this->setColor(GlobalConstants::Colors::White);
+				std::cout << changed[h][w];
+				this->setColor(GlobalConstants::Colors::Yellow);
+				continue;
+			}
+			std::cout << initial[h][w];
 		}
 		std::cout << "|" << std::endl;
 	}
-	std::cout << "+---+---+---+" << std::endl;
+	std::cout << line << std::endl;
+
+	this->setColor(GlobalConstants::Colors::White);
+}
+
+void Manager::startGame(std::vector<std::vector<int>> matrix, std::vector<std::vector<int>> matrix2)
+{
+	Engine engine = Engine(matrix, matrix2);
+
+	engine.Start();
 }
 
 void Manager::shuffle(std::vector<int>* numbers, int seed)
@@ -67,8 +115,9 @@ void Manager::refill(std::vector<int>* numbers)
 	}
 }
 
-void Manager::saveFile(std::vector<std::vector<int>> matrix, std::string folder, std::string name)
+std::string Manager::saveFile(std::vector<std::vector<int>> matrix, std::string folder, std::string name)
 {
+	std::string path = folder + "/" + name + ".txt";
 	std::ofstream fileStream(folder + "/" + name + ".txt");
 
 	for (int i = 0; i < GlobalConstants::SudokuHeight; i++)
@@ -82,19 +131,26 @@ void Manager::saveFile(std::vector<std::vector<int>> matrix, std::string folder,
 	}
 
 	fileStream.close();
+
+	return path;
 }
 
-void Manager::saveSolution(std::vector<std::vector<int>> solution, std::string name)
+std::string Manager::saveSolution(std::vector<std::vector<int>> solution, std::string name)
 {
-	this->saveFile(solution, "Solutions", name);
+	return this->saveFile(solution, "Solutions", name);
 }
 
-void Manager::saveSudoku(std::vector<std::vector<int>> sudoku, std::string name)
+std::string Manager::saveSudoku(std::vector<std::vector<int>> sudoku, std::string name)
 {
-	this->saveFile(sudoku, "Sudokus", name);
+	return this->saveFile(sudoku, "Sudokus", name);
 }
 
-void Manager::makeSudoku(std::vector<std::vector<int>> matrix, std::string name, int difficulty, int seed)
+std::string Manager::saveGame(std::vector<std::vector<int>> sudoku, std::string name)
+{
+	return this->saveFile(sudoku, "Games", name);
+}
+
+std::string Manager::makeSudoku(std::vector<std::vector<int>> matrix, std::string name, int difficulty, int seed)
 {
 	int allBoxes = GlobalConstants::SudokuHeight * GlobalConstants::SudokuHeight;
 	int toBeRemoved = allBoxes / (7 - difficulty);
@@ -143,33 +199,31 @@ void Manager::makeSudoku(std::vector<std::vector<int>> matrix, std::string name,
 
 	std::string sudokuName = name + "-" + std::to_string(difficulty-2) + "-" + std::to_string(seed);
 
-	this->saveSudoku(matrix, sudokuName);
+	this->saveFile(matrix, "Saves", sudokuName);
+	return this->saveSudoku(matrix, sudokuName);
 }
 
 std::vector<std::string> Manager::getAllSolutions()
 {
-	std::string path = "Solutions/";
-	std::vector<std::string> solutions;
-
-	for (const auto& entry : std::filesystem::directory_iterator(path))
-	{
-		solutions.push_back(entry.path().string());
-	}
-
-	return solutions;
+	return this->getFilesNames("Solutions");
 }
 
-std::vector<std::string> Manager::getAllSudokus()
+std::vector<std::string> Manager::getAllSaves()
 {
-	std::string path = "Sudokus/";
-	std::vector<std::string> sudokus;
+	return this->getFilesNames("Saves");
+}
+
+std::vector<std::string> Manager::getFilesNames(std::string path)
+{
+	path += "/";
+	std::vector<std::string> paths;
 
 	for (const auto& entry : std::filesystem::directory_iterator(path))
 	{
-		sudokus.push_back(entry.path().string());
+		paths.push_back(entry.path().string());
 	}
 
-	return sudokus;
+	return paths;
 }
 
 std::vector<std::vector<int>> Manager::getSolution(std::string path)
