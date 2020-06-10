@@ -9,7 +9,10 @@
 Manager manager;
 Generator generator;
 
-void Menu::Main() {
+bool generatedGame = false;
+
+void Menu::Main() 
+{
 	manager.clearConsole();
 
 	while (true)
@@ -47,7 +50,8 @@ void Menu::Main() {
 	}
 }
 
-void Menu::Play() {
+void Menu::Play() 
+{
 	manager.clearConsole();
 
 	while (true)
@@ -69,6 +73,12 @@ void Menu::Play() {
 
 		if (input == 0)
 		{
+			if (generatedGame)
+			{
+				std::cout << "Already created game! You must reload to generate new one!\n";
+				return;
+			}
+
 			this->NewGame();
 			break;
 		}
@@ -94,7 +104,8 @@ void Menu::Play() {
 	}
 }
 
-void Menu::NewGame() {
+void Menu::NewGame() 
+{
 	manager.clearConsole();
 	
 	int seed;
@@ -114,7 +125,8 @@ void Menu::NewGame() {
 		std::string seedStr = std::to_string(seed);
 
 		size_t substring_length;
-		if (!((substring_length = seedStr.find('0')) != std::string::npos)) {
+		if (!((substring_length = seedStr.find('0')) != std::string::npos))
+		{
 			break;
 		}
 
@@ -147,20 +159,23 @@ void Menu::NewGame() {
 		<< "[X] Insert Sudoku name: ";
 	std::cin >> name;
 
-	std::vector<std::vector<int>> sudoku = generator.generate(seed);
-	manager.saveSolution(sudoku, name);
+	std::vector<std::vector<int>> solution = generator.generate(seed);
+	manager.saveSolution(solution, name);
 
+	std::vector<std::vector<int>> sudoku = solution;
 	std::string path = manager.makeSudoku(sudoku, name, difficulty + 2, seed);
 
 	std::cout << "| | \n"
-		<< "[X] Succesfully created \"" << name << "\" with seed " << seed << " and difficulty " << difficulty << "!\n";
+		<< "[X] Succesfully created \"" << name << "\" with seed " 
+		<< seed << " and difficulty " << difficulty << "!\n";
 
-	std::cout << path << std::endl;
+	generatedGame = true;
 
-	manager.startGame(sudoku, sudoku);
+	manager.startGame(sudoku, sudoku, solution);
 }
 
-void Menu::LoadGame() {
+void Menu::LoadGame()
+{
 	manager.clearConsole();
 
 	std::vector<std::string> sudokus = manager.getAllSaves();
@@ -189,11 +204,13 @@ void Menu::LoadGame() {
 			std::vector<std::vector<int>> sudoku = manager.getSudoku(sudokus[input]);
 			std::string initSudokuPath = "Sudokus" + sudokus[input].substr(5);
 			
-			std::cout << initSudokuPath << std::endl;
+			std::string solutonPath = "Solutions" + sudokus[input].substr(5, sudokus[input].find('-')-5) + ".txt";
+			std::cout << solutonPath << std::endl;
 
 			std::vector<std::vector<int>> sudokuInit = manager.getSudoku(initSudokuPath);
+			std::vector<std::vector<int>> solution = manager.getSolution(solutonPath);
 
-			manager.startGame(sudoku,sudokuInit);
+			manager.startGame(sudoku, sudokuInit, solution);
 			break;
 		}
 		else if (input == sudokus.size())
@@ -207,8 +224,8 @@ void Menu::LoadGame() {
 	}
 }
 
-
-void Menu::Solutions() {
+void Menu::Solutions() 
+{
 	manager.clearConsole();
 
 	std::vector<std::string> solutions = manager.getAllSolutions();

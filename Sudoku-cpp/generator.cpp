@@ -9,7 +9,8 @@
 
 std::vector<std::vector<int>> Generator::generate(int seed)
 {
-	std::vector<std::vector<int>> matrix(GlobalConstants::SudokuHeight, std::vector<int>(GlobalConstants::SudokuWidth, 0));
+	std::vector<std::vector<int>> matrix(GlobalConstants::SudokuHeight, 
+		std::vector<int>(GlobalConstants::SudokuWidth, 0));
 	std::vector<int> numbers;
 	int seedForUse = seed;
 

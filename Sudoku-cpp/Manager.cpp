@@ -31,7 +31,8 @@ void Manager::clearConsole()
 
 #endif 
 
-void Manager::setColor(GlobalConstants::Colors color) {
+void Manager::setColor(GlobalConstants::Colors color) 
+{
 	switch (color)
 	{
 	case GlobalConstants::Colors::Red:
@@ -40,8 +41,11 @@ void Manager::setColor(GlobalConstants::Colors color) {
 	case GlobalConstants::Colors::Yellow:
 		std::cout << "\x1B[33m";
 		break;
-	case GlobalConstants::Colors::White:
+	case GlobalConstants::Colors::Green:
 		printf("\x1B[32m");
+		break;
+	case GlobalConstants::Colors::White:
+		printf("\x1B[37m");
 		break;
 	default:
 		printf("\x1B[37m");
@@ -49,14 +53,17 @@ void Manager::setColor(GlobalConstants::Colors color) {
 	}
 }
 
-void Manager::drawMatrix(std::vector<std::vector<int>> initial) {
+void Manager::drawMatrix(std::vector<std::vector<int>> initial)
+{
 	this->drawMatrix(initial, std::vector<std::vector<int>>(9, std::vector<int>(9, 0)));
 }
 
-void Manager::drawMatrix(std::vector<std::vector<int>> initial, std::vector<std::vector<int>> changed) {
+void Manager::drawMatrix(std::vector<std::vector<int>> initial, std::vector<std::vector<int>> changed)
+{
 	this->setColor(GlobalConstants::Colors::Yellow);
 	std::string line = "+---+---+---+";
-
+	std::cout << "\n";
+	
 	for (int h = 0; h < GlobalConstants::SudokuHeight; h++)
 	{
 		if (h % 3 == 0)
@@ -92,9 +99,25 @@ void Manager::drawMatrix(std::vector<std::vector<int>> initial, std::vector<std:
 	this->setColor(GlobalConstants::Colors::White);
 }
 
-void Manager::startGame(std::vector<std::vector<int>> matrix, std::vector<std::vector<int>> matrix2)
+bool Manager::checkSolve(std::vector<std::vector<int>> save, std::vector<std::vector<int>> solution)
 {
-	Engine engine = Engine(matrix, matrix2);
+	for (int i = 0; i < save.size(); i++)
+	{
+		for (int j = 0; j < save[i].size(); j++)
+		{
+			if (solution[i][j] != save[i][j])
+			{
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+void Manager::startGame(std::vector<std::vector<int>> matrix, std::vector<std::vector<int>> matrix2, std::vector<std::vector<int>> matrix3)
+{
+	Engine engine = Engine(matrix, matrix2, matrix3);
 
 	engine.Start();
 }
@@ -244,7 +267,8 @@ std::vector<std::vector<int>> Manager::readFile(std::string path)
 	std::vector<std::vector<int>> matrix;
 	std::vector<int> line;
 
-	while ((myfile.get(c), myfile.eof()) == false) {
+	while ((myfile.get(c), myfile.eof()) == false) 
+	{
 		if (c < '0' || c > '9')
 		{
 			continue;

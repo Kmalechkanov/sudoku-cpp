@@ -11,6 +11,5 @@ public:
 
 	void NewGame();
 	void LoadGame();
-	void DeleteGame();
 };
 

@@ -14,8 +14,9 @@ namespace GlobalConstants
 
     const enum class Colors
     {
-        White = 37,
+        Green = 32,
         Yellow = 33,
+        White = 37,
         Red = 91,
     };
 }

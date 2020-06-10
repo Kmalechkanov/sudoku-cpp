@@ -19,9 +19,11 @@ public:
 	void clearConsole();
 	void drawMatrix(std::vector<std::vector<int>>);
 	void drawMatrix(std::vector<std::vector<int>>, std::vector<std::vector<int>>);
-	void startGame(std::vector<std::vector<int>>, std::vector<std::vector<int>>);
+	void startGame(std::vector<std::vector<int>>, std::vector<std::vector<int>>, std::vector<std::vector<int>>);
 
 	void setColor(GlobalConstants::Colors);
+
+	bool checkSolve(std::vector<std::vector<int>>, std::vector<std::vector<int>>);
 
 	std::string makeSudoku(std::vector<std::vector<int>>, std::string, int, int);
 
