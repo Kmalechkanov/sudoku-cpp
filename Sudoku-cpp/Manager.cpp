@@ -115,9 +115,12 @@ bool Manager::checkSolve(std::vector<std::vector<int>> save, std::vector<std::ve
 	return true;
 }
 
-void Manager::startGame(std::vector<std::vector<int>> matrix, std::vector<std::vector<int>> matrix2, std::vector<std::vector<int>> matrix3)
+void Manager::startGame(std::vector<std::vector<int>> matrix, 
+	std::vector<std::vector<int>> matrix2,
+	std::vector<std::vector<int>> matrix3, 
+	std::string name)
 {
-	Engine engine = Engine(matrix, matrix2, matrix3);
+	Engine engine = Engine(matrix, matrix2, matrix3, name);
 
 	engine.Start();
 }
@@ -141,7 +144,7 @@ void Manager::refill(std::vector<int>* numbers)
 std::string Manager::saveFile(std::vector<std::vector<int>> matrix, std::string folder, std::string name)
 {
 	std::string path = folder + "/" + name + ".txt";
-	std::ofstream fileStream(folder + "/" + name + ".txt");
+	std::ofstream fileStream(path);
 
 	for (int i = 0; i < GlobalConstants::SudokuHeight; i++)
 	{
@@ -170,7 +173,7 @@ std::string Manager::saveSudoku(std::vector<std::vector<int>> sudoku, std::strin
 
 std::string Manager::saveGame(std::vector<std::vector<int>> sudoku, std::string name)
 {
-	return this->saveFile(sudoku, "Games", name);
+	return this->saveFile(sudoku, "Saves", name);
 }
 
 std::string Manager::makeSudoku(std::vector<std::vector<int>> matrix, std::string name, int difficulty, int seed)
@@ -220,7 +223,7 @@ std::string Manager::makeSudoku(std::vector<std::vector<int>> matrix, std::strin
 		}
 	}
 
-	std::string sudokuName = name + "-" + std::to_string(difficulty-2) + "-" + std::to_string(seed);
+	std::string sudokuName = name + "-" + std::to_string(difficulty - 2) + "-" + std::to_string(seed);
 
 	this->saveFile(matrix, "Saves", sudokuName);
 	return this->saveSudoku(matrix, sudokuName);

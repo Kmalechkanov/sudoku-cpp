@@ -19,7 +19,7 @@ public:
 	void clearConsole();
 	void drawMatrix(std::vector<std::vector<int>>);
 	void drawMatrix(std::vector<std::vector<int>>, std::vector<std::vector<int>>);
-	void startGame(std::vector<std::vector<int>>, std::vector<std::vector<int>>, std::vector<std::vector<int>>);
+	void startGame(std::vector<std::vector<int>>, std::vector<std::vector<int>>, std::vector<std::vector<int>>, std::string);
 
 	void setColor(GlobalConstants::Colors);
 

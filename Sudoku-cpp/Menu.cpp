@@ -33,12 +33,10 @@ void Menu::Main()
 		if (input == 0)
 		{
 			this->Play();
-			break;
 		}
 		else if (input == 1)
 		{
 			this->Solutions();
-			break;
 		}
 		else if (input == 2)
 		{
@@ -76,7 +74,7 @@ void Menu::Play()
 			if (generatedGame)
 			{
 				std::cout << "Already created game! You must reload to generate new one!\n";
-				return;
+				break;
 			}
 
 			this->NewGame();
@@ -90,12 +88,10 @@ void Menu::Play()
 		else if (input == 2)
 		{
 			// TODO possability to delete solutions and levels
-			this->Main();
 			break;
 		}
 		else if (input == 3)
 		{
-			this->Main();
 			break;
 		}
 
@@ -162,8 +158,9 @@ void Menu::NewGame()
 	std::vector<std::vector<int>> solution = generator.generate(seed);
 	manager.saveSolution(solution, name);
 
-	std::vector<std::vector<int>> sudoku = solution;
-	std::string path = manager.makeSudoku(sudoku, name, difficulty + 2, seed);
+	std::string path = manager.makeSudoku(solution, name, difficulty + 2, seed);
+
+	std::vector<std::vector<int>> sudoku = manager.getSudoku(path);
 
 	std::cout << "| | \n"
 		<< "[X] Succesfully created \"" << name << "\" with seed " 
@@ -171,7 +168,8 @@ void Menu::NewGame()
 
 	generatedGame = true;
 
-	manager.startGame(sudoku, sudoku, solution);
+	std::string savePath = path.substr(8, path.length()-8-4);
+	manager.startGame(sudoku, sudoku, solution, savePath);
 }
 
 void Menu::LoadGame()
@@ -210,12 +208,12 @@ void Menu::LoadGame()
 			std::vector<std::vector<int>> sudokuInit = manager.getSudoku(initSudokuPath);
 			std::vector<std::vector<int>> solution = manager.getSolution(solutonPath);
 
-			manager.startGame(sudoku, sudokuInit, solution);
+			std::string saveName = sudokus[input].substr(6, sudokus[input].length()-6-4);
+			manager.startGame(sudoku, sudokuInit, solution, saveName);
 			break;
 		}
 		else if (input == sudokus.size())
 		{
-			this->Main();
 			break;
 		}
 
@@ -260,16 +258,44 @@ void Menu::Solutions()
 			std::cin.ignore();
 			std::cin.get();
 
-			this->Main();
 			break;
 		}
 		else if (input == solutions.size())
 		{
-			this->Main();
 			break;
 		}
 
 		manager.clearConsole();
 		std::cout << "Invalid option!" << std::endl;
 	}
+}
+
+int Menu::InGameMenu() 
+{
+	manager.clearConsole();
+	int input = -1;
+
+	while (true)
+	{
+		std::cout << std::endl
+			<< "[X] InGame menu\n"
+			<< "| |\n"
+			<< "|0| Save \n"
+			<< "|1| Save & Exit\n"
+			<< "|2| Exit\n"
+			<< "|3| Back\n"
+			<< "| |\n"
+			<< "[X] Select option: ";
+
+		std::cin >> input;
+
+		if (input >= 0 && input <= 3)
+		{
+			break;
+		}
+
+		std::cout << "Invalid option!" << std::endl;
+	}
+
+	return input;
 }

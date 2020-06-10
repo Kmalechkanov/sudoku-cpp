@@ -11,5 +11,7 @@ public:
 
 	void NewGame();
 	void LoadGame();
+
+	int InGameMenu();
 };
 
